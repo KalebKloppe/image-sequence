@@ -2,6 +2,7 @@ interface options {
 	target: string	// Ref or ID
 	scrollStart: number
 	scrollEnd: number
+	bounds: "outside" | "center" | "inside"
 	frameCount: number
 }
 
@@ -13,10 +14,14 @@ function Main<options>(
 		frameCount = 0,
 	}
 ) {
-	// get the image node
+	// get the image node, it's styles, the src, and the image dimensions
 	const image = document.getElementById(target) as HTMLImageElement
-	const imageStyles = window.getComputedStyle(image);
 	const src = image.currentSrc
+	const drawWidth = image.naturalWidth
+	const drawHeight = image.naturalHeight
+
+	// the parent node of the image
+	const container = image.parentNode as HTMLElement
 
 	// Create an array of file names given the first src in the sequence and the frameCount
 
@@ -43,34 +48,11 @@ function Main<options>(
 		return src.replace(fileName, newFileName)
 	}) as string[]
 
-	// get the image dimensions
-	const drawWidth = image.naturalWidth
-	const drawHeight = image.naturalHeight
-
-	// the parent node of the image
-	const container = image.parentNode as HTMLElement
-
 	// create the canvas
 	const canvas = document.createElement('canvas');
 	canvas.width = drawWidth
 	canvas.height = drawHeight
 
-	// style <canvas> to match the <img>
-	if (image.style.cssText !== '') {
-
-		canvas.style.cssText = image.style.cssText;
-
-	} else {
-
-		// TODO: Check if CSS Value is different, only change if it differs
-		const cssText = Object.values(imageStyles).reduce(
-
-			(css, propertyName) => `${css}${propertyName}:${imageStyles.getPropertyValue(propertyName)};`
-
-		);
-
-		canvas.style.cssText = cssText
-	}
 
 	// draw the first image on the canvas context
 	const context = canvas.getContext("2d") as CanvasRenderingContext2D;
@@ -78,6 +60,14 @@ function Main<options>(
 	canvasImage.src = src
 	context.drawImage(canvasImage, 0, 0, drawWidth, drawHeight)
 
+
+	// Copy any attributes or styles from the <image> to <canvas>
+	function copyAttributes(source) {
+		[...source.attributes].forEach(attr => {
+			canvas.setAttribute(attr.nodeName, attr.nodeValue)
+		})
+	}
+	copyAttributes(image)
 
 	// delete <image> and add <canvas>
 	container.insertBefore(canvas, image)
@@ -104,45 +94,55 @@ function Main<options>(
 	// Determine when to begin and end the animation where the user scrolls
 	let currentFrame;
 	function remeasure() {
-		let element = canvas.getBoundingClientRect();
+
+		let bounds = canvas.getBoundingClientRect();
 		let viewportHeight = window.innerHeight
+		let elementHeight = bounds.bottom - bounds.top
+		let startLine = viewportHeight - (scrollStart * viewportHeight)
+		let endLine = viewportHeight - (scrollEnd * viewportHeight)
+		let animaitonDistance = startLine - endLine
 
-		// scrollProgress = 0 when the canvas is at the bottom of the viewport
-		// scrollProgress = 1 when the canvas is at the top of the viewport
-		const scrollProgress = element.bottom / (viewportHeight + (element.bottom - element.top))
+		// Determine the scrollProgress. 0 when the canvas is at the startLine. Equal to 1 when the canvas is at the endLine.
+		let scrollProgress = (((bounds.top - endLine) - animaitonDistance) * -1) / (elementHeight + animaitonDistance)
 
-		// Determine the frameIndex. 0 when the canvas is at the bottom of the viewport. Equal to frameCount when the canvas is at the top of the viewport.
-		const frameIndex = (Math.round(scrollProgress * frameCount) - frameCount) * -1
+		// Determine the frameIndex. 0 when the canvas is at the startLine. Equal to frameCount when the canvas is at the endLine.
+		let frameIndex = Math.round(scrollProgress * frameCount)
 
-		// clamp the frameIndex between 0 and the frameCount
-		const clampedFrameIndex = Math.min(Math.max(frameIndex, 0), frameCount)
+		// Clamp the frameIndex between 0 and the frameCount
+		let clampedFrameIndex = Math.min(Math.max(frameIndex, 0), frameCount)
 
 		// throttle the animation by framerate
 		window.requestAnimationFrame(animate);
 		function animate() {
+
 			// don't update if the frameIndex is outside the range of the animation
 			if (0 > frameIndex || frameIndex > frameCount) return
 
 			// don't update if the frameIndex is the same as the currentFrame
-			if (frameIndex === currentFrame) return
+			if (currentFrame === clampedFrameIndex) return
 
 			// draw the frame
-			currentFrame = clampedFrameIndex;
 			drawFrame(ImageArray[clampedFrameIndex])
+
+			// update the currentFrame
+			currentFrame = clampedFrameIndex;
+
 		}
+
 	}
 
 	document.addEventListener("scroll", remeasure)
 
+	// TODO: allow user to define the bounds of the canvas. Does the animaton start when the canvas is outside the viewport, inside the viewport, or halfway to the center of the viewport?
 
-
-	// TODO: allow user to define the scrollStart and scrollEnd
+	// TODO: if the image begins in the middle of the viewport. Use that as the scrollStart. For example: Hero Image
 
 	// TODO: if scrollStart and scrollEnd are backwards reverse the video
 
 	// TODO: only add the event listener if the object is inside the viewport using intersection observer
 
 	// TODO: event listener for changes in screen size to change the canvas size
+	// window.addEventListener("resize", setCanvasCSS)
 
 	// TODO: load images async, only replace <image> when they have loaded. Abort when images take too long?
 
