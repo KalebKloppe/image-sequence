@@ -5,15 +5,15 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name=description
-		content="Play an image sequence as the user scrolls. Provide an img tag containg a src or srcset to the first image of an image sequence.">
-	<title>Image Sequence</title>
+		content="Plays an image sequence as the user scrolls. Provide an img tag containg a src or srcset to the first image of an image sequence.">
+	<title>Image Sequencer</title>
 	<style>
 		* {
 			box-sizing: border-box;
 		}
 
 		.space {
-			height: 80vh;
+			height: 120vh;
 		}
 
 		#target {
@@ -23,33 +23,54 @@
 			margin: auto;
 			object-fit: cover;
 		}
+
+		/* img.fade-in {
+			opacity: 0;
+		}
+
+		canvas.fade-in {
+			opacity: 1;
+			animation: fadeIn 750ms ease-out;
+		}
+
+		@keyframes fadeIn {
+			from {
+				opacity: 0;
+			}
+
+			to {
+				opacity: 1;
+			}
+		} */
 	</style>
 </head>
 
 <body>
-	<main>
-		<div class="space"></div>
-		<img id="target" src="/images/0000.jpg" />
-		<div class="space"></div>
-	</main>
 	<script type="module" src="/dist/index.js"></script>
 	<script type="module">
 
-		import CanavasImageSequence from '/dist/index.js'
+		import ImageSequencer from '/dist/index.js'
 
 		const options = {
-			target: "target",
 			bounds: "outside",
 			scrollStart: 0,
 			scrollEnd: 1,
 			frameCount: 48,
+			debug: true,
 		}
 
 		document.addEventListener("DOMContentLoaded",
-			CanavasImageSequence(options)
+			ImageSequencer(
+				document.getElementById("target"), options
+			)
 		)
 
 	</script>
+	<main>
+		<div class="space"></div>
+		<img id="target" src="/images/0000.jpg" class="fade-in" />
+		<div class="space"></div>
+	</main>
 </body>
 
 </html>
