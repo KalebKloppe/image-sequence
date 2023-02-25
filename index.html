@@ -13,7 +13,7 @@
 		}
 
 		.space {
-			height: 120vh;
+			height: 80vh;
 		}
 
 		#target {
@@ -21,7 +21,7 @@
 			height: 60vh;
 			width: 60vw;
 			margin: auto;
-			object-fit: contain;
+			object-fit: cover;
 		}
 	</style>
 </head>
@@ -29,7 +29,7 @@
 <body>
 	<main>
 		<div class="space"></div>
-		<img id="target" src="/images/0000.jpg" style="display: block;" />
+		<img id="target" src="/images/0000.jpg" />
 		<div class="space"></div>
 	</main>
 	<script type="module" src="/dist/index.js"></script>
@@ -39,8 +39,9 @@
 
 		const options = {
 			target: "target",
-			scrollStart: 0.25,
-			scrollEnd: 0.33,
+			bounds: "outside",
+			scrollStart: 0,
+			scrollEnd: 1,
 			frameCount: 48,
 		}
 
