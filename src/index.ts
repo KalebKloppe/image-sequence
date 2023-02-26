@@ -1,4 +1,4 @@
-function ImageSequencer(
+function ScrollImageSequence(
 	target: HTMLImageElement,
 	{	// Default options
 		scrollStart = 0 as number,
@@ -247,5 +247,4 @@ function ImageSequencer(
 }
 
 
-export default ImageSequencer
-// TODO: if scrollStart and scrollEnd are backwards, use the bottom of the canvas as the start line and the top of the canvas as the end line.
+export default ScrollImageSequence

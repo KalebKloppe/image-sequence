@@ -1,16 +1,19 @@
 {
-	"name": "image-sequencer",
+	"name": "scroll-image-sequence",
 	"version": "1.0.0",
-	"description": "plays an image sequence as the user scrolls",
+	"description": "plays an image sequence as the user scrolls using canvas",
 	"keywords": [
 		"image",
 		"sequence",
 		"scroll",
-		"animation",
 		"canvas"
 	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/KalebKloppe/scroll-image-sequence"
+	},
 	"type": "module",
-	"main": "index.js",
+	"main": "dist/index.js",
 	"scripts": {
 		"dev": "tsc -w",
 		"build": "tsc"

@@ -1,14 +1,11 @@
-# Image Sequencer
-
+# Scroll Image Sequence
 Play an image sequence using canvas.
 
 ## Usage
-1. The target must be an `<img>` element.
-1. The target must have `src` (or `srcset`) that points to a numbered image sequence. For exmaple: `000.jpg` or `sequence-12.png`.
 
-### Vanilla
+##### Vanilla
 ```js
-import ImageSequencer from 'image-sequencer';
+import ScrollImageSequence from 'scroll-image-sequence';
 
 document.addEventListener("DOMContentLoaded", () => { 
 
@@ -22,23 +19,23 @@ document.addEventListener("DOMContentLoaded", () => {
 		debug: false,
 	}
 	
-	ImageSequencer(target, options)
+	ScrollImageSequence(target, options)
 	
 })
 ```
 
 
-### React
+##### React & Typescript
 
-```jsx
+```tsx
 import React from 'react';
-import ImageSequencer from 'image-sequencer';
+import ScrollImageSequence from 'scroll-image-sequence';
 
-const ImageSequencerType = {
+const ComponentType = {
 	src: string,
 }
 
-const ImageSequencerComponent:React.FC<ImageSequencerType> = () => {
+const Component:React.FC<ComponentType> = ({src}) => {
 
 	const imgRef = React.createRef();
 
@@ -52,12 +49,15 @@ const ImageSequencerComponent:React.FC<ImageSequencerType> = () => {
 
 	React.useEffect(() => {
 
-		ImageSequencer(ref.current, options)
+		ScrollImageSequence(imgRef.current, options)
 
 	}, [])
 
-	return <img src='/image-00.jpg' ref={imgRef}>
+	return <img src={src} ref={imgRef}>
 }
 
-export default ImageSequencerComponent;
+export default Component;
 ```
+## Notes
+1. The target must be an `<img>` element.
+1. The target must have `src` (or `srcset`) that points to a numbered image sequence. For exmaple: `000.jpg` or `sequence-01.png`.
