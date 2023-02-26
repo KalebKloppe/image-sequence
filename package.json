@@ -1,15 +1,22 @@
 {
-	"name": "canvas-image-sequence",
+	"name": "image-sequencer",
 	"version": "1.0.0",
-	"description": "",
+	"description": "plays an image sequence as the user scrolls",
+	"keywords": [
+		"image",
+		"sequence",
+		"scroll",
+		"animation",
+		"canvas"
+	],
 	"type": "module",
 	"main": "index.js",
 	"scripts": {
-		"dev": "tsc -w"
+		"dev": "tsc -w",
+		"build": "tsc"
 	},
-	"keywords": [],
 	"author": "Kaleb Kloppe",
-	"license": "ISC",
+	"license": "MIT",
 	"devDependencies": {
 		"typescript": "^4.9.5"
 	}

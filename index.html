@@ -18,8 +18,8 @@
 
 		#target {
 			display: block;
-			height: 60vh;
-			width: 60vw;
+			height: 50vh;
+			width: 80vw;
 			margin: auto;
 			object-fit: cover;
 		}
@@ -29,27 +29,17 @@
 <body>
 	<script type="module" src="/dist/index.js"></script>
 	<script type="module">
-
-		import ImageSequencer from '/dist/index.js'
+		import ImageSequencer from "/dist/index.js"
 
 		const options = {
 			bounds: "outside",
 			scrollStart: 0,
 			scrollEnd: 1,
 			frameCount: 49,
-			debug: true,
+			debug: false,
 		}
 
-		document.addEventListener("DOMContentLoaded",
-			() => {
-				ImageSequencer(
-					document.getElementById("target"), options
-				);
-				ImageSequencer(
-					document.getElementById("targetTwo"), options
-				);
-			}
-		)
+		document.addEventListener("DOMContentLoaded", () => { ImageSequencer(document.getElementById("target"), options); })
 
 	</script>
 	<main>

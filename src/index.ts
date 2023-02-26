@@ -1,4 +1,4 @@
-function Main(
+function ImageSequencer(
 	target: HTMLImageElement,
 	{	// Default options
 		scrollStart = 0 as number,
@@ -9,10 +9,12 @@ function Main(
 	}
 ) {
 
+
+
 	/*
 		1. Get and create neccesary HTML Elements
 	*/
-	// the parent node of the image
+	// Element that holds target image
 	const container = target.parentNode as HTMLElement
 
 	// create the canvas
@@ -81,7 +83,7 @@ function Main(
 
 			}) as string[]
 
-		debug && console.log(`${frameCount} file names:`, srcArray)
+		debug && console.log(`${srcArray.length} file names:`, srcArray)
 
 		/*
 			5. Load other images into the imageArray.
@@ -91,7 +93,12 @@ function Main(
 			const promisedImages = await Promise.allSettled(srcArray.map(src => {
 				const image = new Image()
 				image.src = src
-				return image.decode().then(() => image)
+				return image.decode()
+					.then(() => image)
+					.catch(() => {
+						console.error(`Image failed to load: ${src}`)
+						return null
+					})
 			}))
 
 			const loadedImages = promisedImages
@@ -108,7 +115,7 @@ function Main(
 		loadImages().then((otherImages) => {
 			// after all the images are loaded, add them to the imageArray
 			imageArray.push(...otherImages)
-			debug && console.log(`${frameCount} images loaded:`, imageArray)
+			debug && console.log(`${imageArray.length} images loaded:`, imageArray)
 			// replace the <image> with the <canvas> after all frames are loaded
 			insertCanvas()
 		})
@@ -183,8 +190,21 @@ function Main(
 				const endLine = viewportHeight - (scrollEnd * viewportHeight)
 				const animationDistance = startLine - endLine
 
+				let scrollProgress;
+
 				// Determine the scrollProgress. 0 when the canvas is at the startLine. Equal to 1 when the canvas is at the endLine.
-				const scrollProgress = (((position.top - endLine) - animationDistance) * -1) / (elementHeight + animationDistance)
+				if (bounds === "inside") {
+					// 0 = bottom of the canvas. 1 = top of the canvas.
+					scrollProgress = (startLine - position.bottom) / (animationDistance - elementHeight)
+
+				} else if (bounds === "center") {
+					// 0 = center of the canvas. 1 = center of the canvas.
+					scrollProgress = (((position.top + position.bottom) / 2) - startLine) / (animationDistance * -1)
+				}
+				else {
+					// 0 = top of the canvas. 1 = bottom of the canvas.
+					scrollProgress = ((position.top - endLine) - animationDistance) / ((elementHeight + animationDistance) * -1)
+				}
 
 				// Determine the frameIndex. 0 when the canvas is at the startLine. Equal to frameCount when the canvas is at the endLine.
 				const frameIndex = Math.round(scrollProgress * (frameCount - 1))
@@ -214,7 +234,7 @@ function Main(
 					// reset the throttle
 					scheduledAnimationFrame = false;
 
-					debug && console.log("Frame:", clampedFrameIndex, "Scroll Position:", scrollProgress.toFixed(2))
+					debug && console.log("Frame:", frameIndex, "Scroll Position:", scrollProgress.toFixed(2))
 
 				}
 
@@ -226,10 +246,6 @@ function Main(
 
 }
 
-// TODO: allow user to define the bounds of the canvas. Does the animaton start when the outside, center, or inside of the canvas crosses the start/end line?
 
+export default ImageSequencer
 // TODO: if scrollStart and scrollEnd are backwards, use the bottom of the canvas as the start line and the top of the canvas as the end line.
-
-// TODO: handle image load errors
-
-export default Main
