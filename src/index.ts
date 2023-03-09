@@ -145,7 +145,8 @@ function ScrollImageSequence(
 				})
 			}
 			container.insertBefore(canvas, target)
-			container.removeChild(target)
+			// This breaks react tree
+			// container.removeChild(target)
 
 			debug && console.log("Canvas inserted and animating")
 
